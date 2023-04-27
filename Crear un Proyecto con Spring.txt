@@ -1,0 +1,627 @@
+Crear un Proyecto con Spring 
+
+
+Tenemos 2 opciones para crear un proyecto de Spring, desde https://start.spring.io/ (Spring Initializr) o desde Visual Studio Code (VS Code), ambas ofrecen opciones para crear proyectos Spring Boot, pero hay algunas diferencias que podrían hacer que uno prefiera uno sobre el otro, dependiendo de sus preferencias personales y flujo de trabajo.
+
+Ventajas de usar Spring Initializr (https://start.spring.io/):
+Interfaz gráfica fácil de usar: Spring Initializr proporciona una interfaz de usuario gráfica donde puedes seleccionar rápidamente las opciones de configuración del proyecto y las dependencias deseadas. Esto facilita la creación de un proyecto Spring Boot sin tener que recordar comandos específicos o estructuras de archivos.
+
+Independiente del entorno de desarrollo: Spring Initializr no depende de un entorno de desarrollo integrado (IDE) específico, lo que significa que puedes utilizarlo para generar la estructura del proyecto y luego importarlo en el IDE de tu elección, como Visual Studio Code, IntelliJ IDEA, Eclipse u otros.
+
+Ventajas de usar Visual Studio Code para crear un proyecto Spring Boot:
+Integración en el IDE: Si ya estás familiarizado con Visual Studio Code y te gusta trabajar en ese entorno, crear un proyecto Spring Boot directamente en VS Code puede ser más conveniente. Al hacerlo, puedes aprovechar la integración de herramientas y extensiones, como la extensión "Spring Boot Extension Pack", que ofrece soporte para la creación de proyectos, autocompletado de código y otras funcionalidades útiles para el desarrollo de aplicaciones Spring Boot.
+
+Menos pasos para comenzar: Al crear un proyecto Spring Boot directamente en Visual Studio Code, puedes evitar el paso de descargar e importar un archivo .zip generado por Spring Initializr, lo que puede ahorrar tiempo y simplificar tu flujo de trabajo.
+
+En resumen, ambas opciones tienen sus ventajas, y la elección entre Spring Initializr y Visual Studio Code depende de tus preferencias personales y flujo de trabajo. Si prefieres una experiencia más visual y no estás apegado a un IDE en particular, Spring Initializr puede ser la mejor opción. Si ya eres un usuario de Visual Studio Code y prefieres trabajar directamente en ese entorno, entonces la creación de proyectos Spring Boot en VS Code podría ser más adecuada para ti.
+
+
+Crear un Proyecto desde Visual Studio Code:
+Creamos un nuevo proyecto en Visual Studio Code: escribiendo Spring initializr: Create a Maven Project
+
+
+Seleccionamos la version de Spring Boot
+
+
+Seleccionamos el lenguaje del proyecto:
+
+
+Escribimos un nombre para Identificar nuestro proyecto y pulsamos Intro. Tenerlo a mano, lo necesitaremos después
+
+
+Asignamos un nombre al Artifact:
+
+
+tipo de paquetes, seleccionamos War:
+
+
+Especificamos la version de Java:
+
+
+Seleccionamos la dependencia “Spring Boot DevTools Developes Tools:
+
+
+Por ultimo seleccionamos la ruta donde queremos crear nuestro proyecto. De momento no necesitaremos usar TOMCAT.
+
+
+
+
+
+Crear un Proyecto desde: Spring Initializr
+La otra opción para crear un proyecto de Spring es desde la web de Spring Initializr:
+
+
+
+ El archivo de Configuración de Spring
+Este archivo será imprescindible para que Spring entienda y localice las clases mencionadas. En Spring existen 3 formas de crear el archivo de Configuración: Archivo de Configuración XML, Java Source Code y Java Annotations
+
+
+    5.1 Crear archivo de Configuración XML
+Vamos a ver el Ejemplo con XML. Modificar manualmente el archivo XML es la opción mas antigua  de configurar el fichero de Spring, pero es necesario conocerlo para entender como se establecen los beans.  La escritura manual de este archivo fué reemplazada por la escritura automatica con Java Annotations a partir de la versión 3 de Spring. Veremos Java Annotations mas adelante.
+
+En primer lugar tenemos que crear el archivo de configuración, tambien conocido como contenedor de beans, dentro de la carpeta “resources” que ha debido crear el proyecto automaticamente. Este archivo servirá para establecer los parametros de nuestro programa en Spring.
+
+
+¿que son los beans?
+Los beans de Spring son objetos que forman parte de la Inversión de Control (IoC) de Spring y son administrados por el contenedor IoC de Spring. En otras palabras, Spring se encarga de la creación, configuración e interacción de estos objetos. Los beans de Spring se pueden configurar mediante anotaciones, archivos XML o archivos de configuración en Java.
+
+Un bean en Spring puede ser cualquier objeto Java que esté configurado para ser gestionado por el contenedor Spring. Los beans de Spring actúan como componentes reutilizables y modulares que se pueden conectar fácilmente entre sí para construir aplicaciones más grandes.
+
+Aunque podemos ponerle el nombre que queramos, el standar por convención es: “applicationContext.xml”.
+
+1º) Crearemos nuestro archivo applicationContext.xml con el siguiente contenido literalmente (sin comentarios):
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+                        ">
+    <!--La siguiente linea es el cierre del beans general, debemos mantenerla al final del código*/-->
+</beans>
+
+2º) Desde donde vayamos a llamar a Spring (nuestro Main), tenemos que cargar el Contexto o archivo XML de la siguiente forma:
+<!--Cargar Archivo Sprinx XML. En el parentesis debe ir el nombre exacto de nuestro archivo de configuraciión XML -->
+ClassPathXmlApplicationContext contexto = new ClassPathXmlApplicationContext("applicationContext.xml");
+
+en la parte superior de dicho paquete tendremos que importar:
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+al final de nuestro código Main, deberemos cerrar el contexto:
+contexto.close();
+Inversión de Control (IoC)
+Ejemplo Teorico: En las aplicaciones normales, de consola como las que hemos diseñado hasta ahora, el flujo de la info y el control del programa va en orden lineal de arriba a abajo, salvo llamadas a funciones. Sin embargo, cuando hacemos una interfaz gráfica el flujo de la información y el control del programa ya no es lineal, porque dependerá de la opción gráfica que se haya seleccionado. Esa selección del agente externo es la que desencadena el código que se debe ejecutar y en este caso lo va a manejar Spring.
+
+Vamos a ver un ejemplo con Empleados:
+En primer lugar crearemos 3 clases que nos servirán para hacer las pruebas: EmpleadoRaso, EmpleadoJefe y EmpleadoDirector. En cada una de las clases dejamos creado el constructor vacio. en visual Studio se hace escribiendo el comando “ctor” dentro de la clase donde quieres implementarlo.
+
+Para implementar IoC en un ejemplo de empleados, se pueden seguir los siguientes pasos:
+Crear una interfaz sobre la clase padre, en este caso "Empleados", y agregar un método vacío "getResponsabilidades".
+	public interface Empleados {
+    	public String getResponsabilidades();
+}
+
+
+En las subclases que dependen de "Empleados", implementar la interfaz agregando la implementación del método "getResponsabilidades".
+		public class EmpleadoJefe implements Empleados{}
+
+
+En el archivo applicationContext.xml, agregar un bean con un identificador único y la clase padre que generará los objetos. El bean y los detalles se deben escribir antes del cierre de "</beans>".
+<!--Además del código estándar anterior, ahora debemos añadir los bean que queramos crear, La clase no puede ser abstracta ni una Interfaz. El bean y el detalle se deben escribir antes del cierre de </beans> como en el siguiente ejemplo. Además, ten en cuenta lo siguiente al crear un bean:
+
+1. El atributo 'id' de cada bean debe ser único en el contexto de la aplicación. No puede haber dos beans con el mismo 'id'.
+2. Puede utilizar el atributo 'name' en lugar de 'id' para asignar un nombre al bean. Además, 'name' admite asignar varios nombres separados por comas, permitiendo el uso de alias para el mismo bean.
+3. en el campo class, debe de apuntar a la ruta y nombre de nuestra clase.
+3. Si desea especificar el ámbito del bean (singleton, prototype, etc.), utilice el atributo 'scope'.
+4. Puede configurar las propiedades de un bean utilizando el elemento 'property' junto con el atributo 'name' para especificar el nombre de la propiedad y 'value' o 'ref' para asignar un valor o una referencia a otro bean, respectivamente.
+5. Si necesita configurar la inicialización y destrucción de métodos en un bean, utilice los atributos 'init-method' y 'destroy-method'.
+
+Ejemplo:
+-->
+<bean id="miEmpleado" class="com.spring.spring.EmpleadoJefe">
+    <!-- El parámetro 'class' debe señalar el paquete donde se encuentre nuestra clase -->
+</bean>
+
+
+En nuestro programa principal para crear un objeto de tipo JefeEmpleado, hasta ahora hemos usado invocaciones a las clases específicas:
+EmpleadoJefe empleado1= new EmpleadoJefe();
+
+SI queremos crear el objeto de forma abstraida, podremos invocarlo de la siguiente manera invocando a la interfaz
+Empleados empleado2 = new EmpleadoJefe();
+
+
+y para crear el objeto usando Spring, deberiamos invocarlo:
+//6.4 Creamos un objeto de tipo Empleado, y lo igualamos al contexto creado
+    //el comando .getBean requiere 2 parametros (nombreBean, Typo objeto)
+    Empleados Jaime = contexto.getBean("miEmpleado", Empleados.class);
+    System.out.println("EL Siguiente mensaje son las responsabilidades de un Empleado construido con Spring de tipo " +Jaime.getClass());
+    System.out.println(Jaime.getResponsabilidades());
+
+
+ Inyección de Dependencias
+¿Que són las inyecciones de Dependencias?
+ Es un patrón de diseño orientado a objetos que implementa la idea de Inversion de Control, en el que se suministran objetos a una clase a través del control de las dependencias de objetos, en lugar de ser la propia clase la que cree dichos objetos. 
+
+El comportamiento de conectar objetos con otros objetos o "inyectar" objetos en otros objetos está controlado por el sistema regulador en lugar del objeto en sí.
+
+Hasta ahora hemos visto 2 formas fundamentales de inyección de Dependencias que han sido:
+Mediante un Constructor
+Mediante un Setter
+
+Ahora vamos a hacerlo con Spring ampliando el ejemplo de Empleados, añadiendo Documentos:
+Inyección de Dependencias en Spring Mediante un Constructor
+1º) Creamos la clase Documento y la interfaz de la dependencia (Ejemplo Documentos).
+Creamos Interfaz GestionDocumentos :
+public interface GestionDocumentos {
+    public String getDocumento();
+}
+
+
+Creamos clase Documento e implementamos la interface anterior
+public class Documento implements GestionDocumentos {
+
+
+    @Override
+    public String getDocumento() {
+        return "Presentación del Documento";
+    }/* este getDocumento y su contenido será la característica común de todos los demás objetos.*/
+}
+
+
+la clase Interfaz en nuestro ejemplo sería “Empleados”.
+public interface Empleados {
+    public abstract String getResponsabilidades();
+
+
+    public String getDocumento();/*Añadimos este nuevo método. Todas las clases que implementen Empleados deben tener el desarrollo propio del método con el mismo nombre*/
+}
+
+2º) Creación de constructor en la clase para inyectar la dependencia. 
+    /* 7.2 Creamos el campo de nuestra interfaz GestionDocumento */
+    private GestionDocumentos documentoNuevo;
+
+
+    /* 7.2 Creamos el constructor que inyectará la dependencia */
+    public EmpleadoDirector(GestionDocumentos documentoNuevo) {
+        this.documentoNuevo = documentoNuevo;
+    }
+
+    /*7.2 en el siguiente método añadimos el campo de clase documentoNuevo con el método de la Interfaz GestionDocumentos*/
+    public String getDocumento() {
+       return "Informe del DIRECTOR: " + documentoNuevo.getDocumento();
+    }
+
+3º) Configurar la inyección de dependencia en archivo ApplicationContext.xml
+<!--7.3 Creamos la dependencia añadiendo un nuevo bean con id y clase que construye Documentos, en este caso Documentos -->
+    <bean id="miDocumento" class="com.spring.spring.Documento"> </bean>
+
+
+Además tendremos que configurar la dependencia en cada objeto. Ejemplo
+    <bean id="miEmpleado" class="com.spring.spring.EmpleadoDirector">
+    <!--7.3 Configurar la dependencia en cada objeto. Creamos un constructor-arg con referencia al id de la dependencia que necesitemos-->
+        <constructor-arg ref="miDocumento"></constructor-arg>
+    </bean>
+
+4º) probamos nuestro código con una llamada a la inyección de dependencias:
+/*7.4 Inyeccion de dependencias */
+System.out.println(Jaime.getDocumento());
+Inyección de Dependencias en Spring mediante Setter
+
+1º) Creamos la clase Documento y la interfaz de la dependencia (Ejemplo Documentos ya creado en el punto anterior).
+2º) Creacion de método setter en la clase para la inyección
+     /*7.B.2 el setter se crea automaticamente escribiendo set en la clase*/
+    public void setDocumentoNuevo(GestionDocumentos documentoNuevo) {
+        this.documentoNuevo = documentoNuevo;
+    }
+
+3º) Configurar la inyección de dependencia en archivo XML (ApplicationContext.xml)
+   <!-- 7.B.3 Creamos un bean para inyección de dependencias con un SETTER-->
+    <bean id="EmpleadoDirector" class="com.spring.spring.EmpleadoDirector">
+        <!-- importante que el porperty name  debe ser exactamente igual que -->
+        <property name="documentoNuevo" ref="miDocumento"></property>
+    </bean>
+
+
+4º) Probamos
+        /* 7.B.4 llamamos al nuevo Beans de nombre EmpleadoDirector*/
+        Empleados Juanmi = contexto.getBean("EmpleadoDirector", Empleados.class);
+        System.out.println("A continuación verás las llamadas a los métodos por inyección de setter");
+        System.out.println(Juanmi.getResponsabilidades());
+        System.out.println(Juanmi.getDocumento());
+
+Inyección de campos en Spinrg
+Inyectar campos puee ser útil en aquellos objetos que utilizan ciertos campos de forma repetida
+
+1º) Creamos los campos que necesitemos en el objeto 
+En el ejemplo que estabamos creando crearemos los campos emailDepartamental y empresa en EmpleadoDirector
+
+  /*7.C.1 Creamos campos para la inyección de dependencias */
+    private String emailDepartamental;
+    private String empresa;
+   
+2º) Creaamos getter y setter en la clase para la inyección
+    public String getEmailDepartamental() {
+        return emailDepartamental;
+    }
+
+
+    public void setEmailDepartamental(String email) {
+        this.emailDepartamental = email;
+    }
+
+
+    public String getEmpresa() {
+        return empresa;
+    }
+
+
+    public void setEmpresa(String empresa) {
+        this.empresa = empresa;
+    }
+
+
+3º) Configurar la inyección de dependencia de los nuevos campos en archivo XML (ApplicationContext.xml)
+    <bean id="EmpleadoDirector" class="com.spring.spring.EmpleadoDirector">
+        <property name="documentoNuevo" ref="miDocumento"></property>
+        <!-- 7.C.3 Creamos las propertys de los nuevos campos -->
+        <property name="emailDepartamental" value="directores@pruebas.es"></property>
+        <property name="empresa" value="EMPRERSA PRUEBAS"></property>
+    </bean>
+
+4º) Probamos 
+        /*7.C.4 Inyección de campos en Spring con getter*/
+        EmpleadoDirector Monica = contexto.getBean("EmpleadoDirector", EmpleadoDirector.class);
+        System.out.println("A continuación verás las llamadas a los métodos por inyección de setter");
+        System.out.println(Monica.getResponsabilidades());
+        System.out.println(Monica.getDocumento());
+        System.out.println("email: " + Monica.getEmailDepartamental());
+        System.out.println("Empresa: " + Monica.getEmpresa());
+D. Escribir archivo de propiedades externo
+En el ejemplo anterior vimos como inyectar campos (7.3.C) y ahora vamos a ver otra opción que es inyectar propiedades desde un archivo externo en lugar de desde el XML. 
+
+La principal ventaja que ofrece escribir las propiedades desde un archivo externo es que cuando tenemos muchos datos, se hace más facil de leer y mantener que desde el XML.
+
+1º) Creamos en la carpeta “resources” un archivo con el nombre que queramos y la extension “.propiedades”
+
+2º) Añadir en el archivo “applicationContext.xml” la localización del archivo externo de la siguiente forma:
+<context:property-placeholder location="classpath:datosImportantes.propiedades"/>
+
+
+*Nota: No sé de que forma 
+
+         SINGLETON Y PROTOTYPE
+Spring por defecto usa el diseño Singleton o instancia única es un patrón de diseño que permite restringir la creación de objetos pertenecientes a una clase o el valor de un tipo a un único objeto.
+Su intención consiste en garantizar que una clase solo tenga una instancia y proporcionar un punto de acceso global a ella. Mas info: https://es.wikipedia.org/wiki/Singleton
+
+Ventajas de Singleton: Ofrece un control al acceso de Instancias. y mejora el control de la Herencia.
+
+De otra parte, podemos forzar el uso del patrón de diseño Prototype que tiene como finalidad crear nuevos objetos clonando una instancia creada previamente. Este patrón especifica la clase de objetos a crear mediante la clonación de un prototipo que es una instancia ya creada. La clase de los objetos que servirán de prototipo deberá incluir en su interfaz la manera de solicitar una copia, que será desarrollada luego por las clases concretas de prototipos
+https://es.wikipedia.org/wiki/Prototipo_(patr%C3%B3n_de_dise%C3%B1o)
+
+Ventajas de Prototype: Se pueden crear y eliminar objetos en tiempo de ejecución. Permite hacer clones de un objeto, cambiando lo necesario siempre ahorra mas tiempo y recursos que crear un objeto nuevo.
+
+¿Porque usar uno u otro? Según la necesidad que tengamos en cada momento nos interesará que solo haya un objeto por clase (como cuando abrimos un archivo), o varios, cuando tendremos muchos objetos con las mismas propiedades.
+
+Prueba de Singleton y Prototype:
+1º) Duplica el archivo “applicationContext.xml” con un nombre nuevo y limpia todos los bean secundarios que hemos creado antes (manten las etiquetas <beans> y </beans>.
+
+2º) Crea un nuevo main para hacer las pruebas.
+	En este nuevo main tendremos que incluir de nuevo la llamada a nuestro archivo de configuración XML:
+ClassPathXmlApplicationContext contexto = new ClassPathXmlApplicationContext("applicationContext8.xml");
+
+//Creamos 2 objetos mediante el beans al XML de Spring
+        Empleados Ana = contexto.getBean("EmpleadoDirector", Empleados.class);
+        System.out.println("A continuación verás la dirección de memoria de Ana");
+        System.out.println(Ana);
+               
+        Empleados Manolo = contexto.getBean("EmpleadoDirector", Empleados.class);
+        System.out.println("A continuación verás la dirección de memoria de Manolo");
+        System.out.println(Manolo);
+
+
+        if(Ana==Manolo){
+            System.out.println("Es el mismo objeto");
+        }else{
+            System.out.println("Son distintos");
+        }
+3º) Podemos cambiar el diseño por defecto Singleton a Prototype añadiendo en el bean: scope="prototype"
+
+<bean id="EmpleadoDirector" class="com.spring.spring.EmpleadoDirector" scope="prototype">
+
+4º) Si probamos de nuevo el código, veremos como ahora los objetos creados son distintos.
+
+Ciclo de Vida de los BEANS
+Los beans tienen un ciclo de vida normal que se puede ver en la siguiente imagen, se puede “extender” solo con el diseño Singleton (con Prototype no funcionan) con los metodos Init y Destroy suelen usarse para ejecutar tareas, normalmente no son de tipo void
+
+
+
+Metodo init - Ejecuta tareas justo antes de que el bean esté disponible. Por ejemplo para activar servicios antes de que el bean esté listo.
+Metodo Destroy - Ejecuta tareas después de que el bean haya sido utilizado. Por ejemplo para liberar recursos, cerrar conexiones, etc.
+
+Prueba métodos init y destroy con metodos void que devuelvan un mensaje para comprobar su ejecución en el último Ejemplo de Singleton y Prototype con “applicationContext8.xml”.
+
+    /*método Init Ciclo de Vida */
+    public void metodoInicioPrueba(){
+        System.out.println("Aunque puedo añadir todas las tareas que yo quiera antes de iniciar el beans, de momento solo muestro un mensaje");
+    }
+
+
+
+    /* Metodo destroy para ejecutar tareas despues de haber usado el bean. */
+    public void metodoDestroyPrueba() {
+        System.out.println("Aunque puedo añadir todas las tareas que yo quiera en el DESTROY para que se ejecuten DESPUES DE APAGAR el beans, de momento solo muestro un mensaje");
+    }
+
+
+En el archivo “applicationContext8.xml” deberemos añadir a nuestro beans los metodos de Init y Destroy como puedes ver en el siguiente ejemplo:
+<bean id="EmpleadoDirector" class="com.spring.spring.EmpleadoDirector" init-method="metodoInicioPrueba" destroy-method="metodoDestroyPrueba">
+
+
+
+Java Annotations
+Java Annotations es un sistema de etiquetado que nos permite añadir metadatos a nuestras clases en Java para identificar los distintos métodos, variables, entre otros, de nuestro programa. Con Java Annotations, podemos simplificar la configuración y la creación de instancias de objetos sin necesidad de modificar el archivo XML manualmente.
+
+Utilizando el principio de inversión de control , Spring recopila instancias de bean de nuestra aplicación y las utiliza en el momento adecuado. Podemos mostrar las dependencias de los beans a Spring sin necesidad de manejar la configuración y la creación de instancias de esos objetos.
+
+¿Que ventajas aporta Java Annotations?
+Configurar los beans es mucho mas sencillo.
+Simplifica mucho el código en el archivo de configuración XML.
+Muy útil cuando tenemos que configurar cientos de beans en un programa.
+
+¿Cómo funciona Java Annotations?
+Spring nos permite configurar el archivo XML para que escanee el código de todas nuestras clases de forma automática, cuando encuentra alguna annotation, la registra automáticamente en el contenedor.
+
+Para ello es necesario:
+1º) Para utilizar Java Annotations en Spring, es necesario configurar el archivo XML para que escanee automáticamente el código de nuestras clases en busca de Annotations. Para ello, agregamos la etiqueta <context:component-scan base-package="nombre.paquete.base"></context:component-scan> en el archivo de configuración XML, donde nombre.paquete.base es el nombre del paquete de nuestro programa donde se encuentran las clases que queremos escanear.
+
+
+2º) Agregar annotations a nuestras clases del Proyecto
+A continuación, podemos agregar la Annotation @Component a nuestras clases personalizadas, lo que permitirá a Spring detectarlas automáticamente y administrarlas y distribuirlas sin necesidad de escribir código explícito. Para utilizar @Component, importamos org.springframework.stereotype.Component.
+
+3º) Pedir el bean al contenedor de Beans.
+
+8.1 Annotation @SpringBootApplication
+La Annotation @SpringBootApplication es equivalente a utilizar @Configuration, @EnableAutoConfiguration y @ComponentScan, y se utiliza en la clase principal de la aplicación.
+Usamos esta anotación en la clase principal de la aplicación. Si hemos creado el proyecto como se indica en el punto 4, ya estará incluido en nuestro main.
+
+8.2 Annotations @Component
+Antes de que podamos entender el valor de @Component , debemos recordar Spring ApplicationContext. Spring ApplicationContext es donde Spring contiene instancias de objetos que ha identificado para administrarlos y distribuirlos automáticamente. Estos se llaman beans.
+La administración de beans y la oportunidad de inyección de dependencia son algunas de las características principales de Spring.
+
+Para poder usarlo habrá que importar import org.springframework.stereotype.Component;
+@Component es una anotación que permite que Spring detecte automáticamente nuestros beans personalizados.
+En otras palabras, sin tener que escribir ningún código explícito, Spring:
+Escanee nuestra aplicación en busca de clases anotadas con @Component
+Instanciarlos e inyectarles las dependencias especificadas
+Inyéctelos donde sea necesario
+Sin embargo, la mayoría de los desarrolladores prefieren utilizar las anotaciones estereotipadas más especializadas para cumplir esta función.
+
+
+1º) En nuestro nuevo proyecto copiamos el “ApplicationContext.xml” y le añadimos el componente de escaneo de beans:
+<context:component-scan base-package="com.annotations.pruebaannotations"></context:component-scan>
+
+
+
+2º) Creamos una interfaz con 2 metodos y una clase que la implemente. En la clase añadiremos la annotation @Component("Director")
+public interface Empleados {
+    public abstract String getResponsabilidades();
+    public String getDocumento();
+}
+
+
+CLASE EmpleadoDirector:
+@Component("Director")
+public class EmpleadoDirector implements Empleados {
+    public String getResponsabilidades() {
+        return "Dirige los departamentos y objetivos de la empresa";
+    }
+
+
+    @Override
+    public String getDocumento() {
+        return "Documento Generado por el Director";
+    }
+
+
+}
+
+
+3º) Escribimos el código en nuestro Main, incluyendo la llamada al XML
+// Indicamos la ruta del contexto XML
+ClassPathXmlApplicationContext contexto = new ClassPathXmlApplicationContext("applicationContext.xml");
+
+
+        // Construimos un bean del contenedor
+        Empleados Maria = contexto.getBean("Director", Empleados.class);
+
+
+        // usamos el bean
+        System.out.println(Maria.getDocumento());
+        System.out.println(Maria.getResponsabilidades());
+
+
+
+
+8.3 Annotations @Autowired - Constructor
+En el marco de Spring, se implementó en la versión de Spring 2.5, la Inyección de Dependencia impulsada por anotaciones es posible gracias a la anotación principal @Autowired. Esta característica permite que Spring resuelva e inyecte beans colaboradores en nuestro bean, simplificando así la declaración de dependencias en el archivo de configuración de Spring. A partir de Spring 4.3, si el bean que se necesita tiene solo un constructor, no es necesario usar la annotation @Autowired, ya que Spring lo cogerá por defecto. Fuente: Documentación oficial Spring - 1.9.1. Using @Autowired
+
+Para probar el uso de @Autowired, podemos seguir el ejemplo anterior. Eliminamos la etiqueta manual @Component("Director"), y así se utilizará el autowired, que cogerá el nombre de la clase con la primera letra en minúscula en lugar de mayúscula.
+
+Para una prueba más completa, podemos crear un nuevo proyecto y seguir los siguientes pasos:
+
+Prueba  Autowired de un Constructor - Proyecto limpio:
+Vamos a hacer un proyecto nuevo siguiendo los pasos del punto 4, usando las mismas clases que hemos visto, como repaso:
+
+1º) Creamos nuestro “applicationContext.xml”
+2º) Creamos la Interfaz Empleados con 2 métodos publicos.
+3º) Creamos la clase EmpleadoDirector implementado la interfaz Empleados.
+
+Como novedad en este ejercicio para probar el autowired añadiendo una interfaz y una clase nuevas:
+4º) Creamos una interfaz nueva relacionada con uno de los métodos de la interfaz Empleados
+public interface CrearDocumentos {
+    public String getDocumento();
+}
+
+
+5º) Creamos una clase nueva que implemente la interfaz del punto 4.
+public class InformePeriodicoAnual implements CrearDocumentos {
+
+
+    @Override
+    public String getDocumento() {
+        return "Informe Periodico Anual";
+    }
+
+
+6º) Creamos un constructor en la clase que solicitará la dependencia y usamos los métodos del bean
+Empleados Maria = context.getBean("empleadoDirector", Empleados.class);
+        System.out.println(Maria.getDocumento());
+        System.out.println(Maria.getResponsabilidades());
+
+
+7º) IMPORTANTE: para que funcione el autowired hay que añadir las annotations en todas nuestras clases, ya que esa será la etiqueta que use para identificar los componentes:
+@Component en todas nuestras clases e interfaces normales, antes de la declaracion de la clase, para que pueda localizarlas por su nombre.
+@Autowired en el constructor de la clase que usamos en el beans.  Esto lo que hará es buscar en segundo plano en todo el proyecto si existe una clase que implemente la interfaz mencionada en la etiqueta @Autowired, en nuestro ejemplo la interfaz es: “CrearDocumentos”, que está implementada en el InformePeriodicoAnaual, si la encuentra, es de esa clase de donde cogerá la inyección de dependencia. Solo debemos añadir un @Autowired por clase en 1 de los constructores. @Autowired no se pone en el Main, solo en las clases que tienen mas de 1 constructor.
+   @Autowired // para el constructor cuando hay mas de uno
+    public EmpleadoDirector(CrearDocumentos documentoDirector) {
+        this.documentoDirector = documentoDirector;
+    }
+
+8º) Finalmente, podemos probar el código y verificar que la inyección de dependencia se ha realizado correctamente.
+
+8.4 Annotations @autowired - con método normal, con setter y con campo de clase 
+El principio es el mismo que en el punto del @Autowired anterior, pero en esta ocasion sobre un campo de clase privado;
+
+     /* 8.3 @autowired Constructor */
+     @Autowired
+     private CrearDocumentos documentoDirector;
+
+
+8.5 Annotations @Qualifier
+La anotación @Autowired puede presentar un problema cuando se aplica la anotación @Component en varios lugares. En ese caso, Spring no sabe a cuál de ellos referirse. Para solucionarlo, se utiliza la anotación @Qualifier para especificar el beanId de un objeto concreto.
+
+Para hacer la prueba, podemos duplicar la clase InformePeriodicoAnual y llamarla InformePeriodicoMensual. Solo con este cambio, nuestro programa dejará de funcionar y nos mostrará el mensaje: "Field documentoDirector in com.annotations.pruebaannotations.EmpleadoDirector required a single bean, but 2 were found".
+
+Para solucionarlo, usaremos la etiqueta @Qualifier("") donde especificaremos a cuál de las clases que implementan la interfaz requerida nos referimos:
+
+     @Autowired
+     @Qualifier("informePeriodicoMensual")
+     private CrearDocumentos documentoDirector;
+
+8.6 @scope
+La anotación @Scope nos permite indicar el tipo de diseño que queremos para el objeto. Por ejemplo, en la clase EmpleadoDirector:
+@Component 
+@Scope("prototype")
+public class EmpleadoDirector implements Empleados {
+
+8.7 @PostConstruct y @PreDestroy
+Al Igual que vimos en el ciclo de vida de los Beans, podemos ejecutar métodos (no son clases propias) antes y después de que se cree el bean con @Annotations
+
+@PostConstruct - Ejecuta tareas justo cuando se construye el bean, antes de que el bean esté disponible. Por ejemplo para activar servicios antes de que el bean esté listo.
+@PreDestroy - Ejecuta tareas después de que el bean haya sido utilizado y destruido. Por ejemplo para liberar recursos, cerrar conexiones, etc.
+Prueba:
+     //8.7 @PostConstruct y @PreDestroy
+        @PostConstruct
+        public void metodoPostConstruct() {
+            System.out.println("Ejecutando el método PostConstruct. Ejecuta tareas justo cuando se construye el bean, antes de que el bean esté disponible. Por ejemplo para activar servicios antes de que el bean esté listo.");
+        }
+
+
+@PreDestroy: Ejecuta tareas después de que el bean haya sido utilizado y destruido. Por ejemplo, para liberar recursos, cerrar conexiones, etc.
+        @PreDestroy
+        public void metodoPreDestroy() {
+            System.out.println("Ejecutando el método PreDestroy. Ejecuta tareas después de que el bean haya sido utilizado y destruido. Por ejemplo para liberar recursos, cerrar conexiones, etc.");
+        }
+8.8 @Configuration: 
+Sirve para reemplazar el archivo de Configuration XML. Debemos crear un nuevo archivo .java para guardar la configuracion en la misma ruta de resources que se encontraba nuestro archivo XML. De esta forma todo el codigo de nuestra app estaría en Java y no habria XML. En el archivo habrá que usar también @ComponentScan a efectos de indicar la ruta del paquete que queremos que escane, como hicimos en su dia en el XML.
+
+//8.8 @Configuration - Creamos ruta de nuestro archivo ConfigurationFile.java usando Annotations de Spring
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+
+
+
+
+@Configuration
+@ComponentScan("com.annotations.pruebaannotations")
+public class ConfigurationFile {}
+   
+y en nuestra clase principal deberemos importar las classes necesarias:
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import com.annotations.ConfigurationFile;
+
+
+y en nuestra clase principal debemos reemplazar también nuestro viejo archivo XML por la ruta del nuevo:
+AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ConfigurationFile.class);
+       
+
+
+8.9 @Bean:
+Ahora que no usamos XML para declarar los beans, necesitamos identificarlos en el contenedor de Spring con código Java.
+Como ejemplo, vamos a añadir beans para nuestros EmpleadosDirectores, EmpleadoStuff y sus respectivos informes.
+
+ //8.9 definimos bean para el informe diario de EmpleadoStuff
+    @Bean
+    public CrearDocumentos informePersonalizadoStuff() {
+        return new InformeDiarioStuff();
+    }
+
+
+    public CrearDocumentos informePeriodicoMensual() {
+        return new InformePeriodicoMensual();
+    }
+
+
+    //8.9 definimos bean para EmpleadoStuff e inyectar dependencias
+    @Bean
+    public Empleados empleadoStuff() {
+        EmpleadoStuff empleadoStuff = new EmpleadoStuff(informePersonalizadoStuff());
+        return empleadoStuff;
+    }
+
+
+    //8.9b definimos bean para EmpleadoDirector e inyectar dependencias
+    @Bean
+    public Empleados empleadoDirector() {
+        EmpleadoDirector empleadoDirector = new EmpleadoDirector(informePeriodicoMensual());
+        return empleadoDirector;
+    }
+
+
+8.10 @PropertySource y @Value
+En el archivo de Configuración en Java que hemos creado, podemos añadir la ruta del archivo de propiedades de la siguiente manera, donde classpath llamará al nombre de nuestro archivo:
+@PropertySource("classpath:datosEmpresa.propiedades")//8.10 añadir archivo propiedades
+
+Ahora desde nuestras clases podremos inyectar el valor de esos campos, identificandoles con la etiqueta @Value como en el siguiente ejemplo. Además habrá que añadir sus respectivos getter y setters:
+     //8.10 Mostrar valores de nuestro archivo de propiedades invocado desde Java
+     @Value("${email}")
+     private String email;
+     @Value("${nombreEmpresa}")
+     private String nombreEmpresa;
+
+y los probamos invocándolo desde nuestro programa:
+        // 8.10 @PropertySource y @Value para leer propiedades
+        //System.out.println(Juan.getEmail()); Juan no podría acceder a la propiedad email porque no es un EmpleadoStuff
+        EmpleadoStuff Juan2 = context.getBean("empleadoStuff", EmpleadoStuff.class);
+        System.out.println("8.10 Email de Juan2 invocado con etiqueta @Value: "+Juan2.getEmail());
+        System.out.println("8.10 Empresa de Juan2 invocado con etiqueta @Value: "+Juan2.getNombreEmpresa());
+
+
+
+
+
+8.11 @Column   
+La anotación @Column es opcional y se puede utilizar para personalizar cómo se mapean las propiedades de una entidad a las columnas de una tabla de base de datos. Si no se especifica, JPA utilizará las convenciones de nomenclatura y configuración predeterminadas para mapear las propiedades de la entidad a las columnas de la tabla.
+
+En el caso de la clase Cliente, no hemos utilizado la anotación @Column ya que las propiedades de la entidad se mapearán a las columnas de la tabla utilizando los nombres de las propiedades y las configuraciones predeterminadas.
+
+Sin embargo, si deseas personalizar la configuración de la columna o especificar un nombre de columna diferente, puedes agregar la anotación @Column. Por ejemplo, si deseas que el campo "email" de la entidad Cliente se mapee a una columna llamada "correo_electronico" en la tabla de la base de datos, puedes agregar la anotación @Column de la siguiente manera:
+
+@Column(name = "correo_electronico") private String email;
+
+Esto hará que el campo "email" se mapee a la columna "correo_electronico" en la tabla de la base de datos. También puedes personalizar otros aspectos de la columna, como su longitud, su precisión y su escala, utilizando otras propiedades de la anotación @Column. 
+
+Por ejemplo:
+@Column(name = "correo_electronico", length = 100, nullable = false)
+private String email;
+En este ejemplo, el campo "email" se mapea a la columna "correo_electronico" con una longitud máxima de 100 caracteres y no puede ser nulo.
