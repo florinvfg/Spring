@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+                        ">
+   
+   
+   <bean id="miEmpleado" class="spring.spring3.EmpleadoJefe">
+    <!--La siguiente linea es el cierre del bean nuevo que hemos creado*/-->
+    </bean>
+
+<!--7.3 Creamos la dependencia añadiendo un nuevo bean con id y clase que construye Documentos, en este caso Documentos -->
+    <bean id="miDocumento" class="spring.spring3.Documento"></bean>
+   
+
+
+ <bean id="EmpleadoDirector" class="spring.spring3.EmpleadoDirector">
+        <property name="documentoNuevo" ref="miDocumento"></property>
+        <!-- 7.C.3 Creamos las propertys de los nuevos campos -->
+        <property name="emailDepartamental" value="directores@pruebas.es"></property>
+        <property name="empresa" value="EMPRERSA PRUEBAS"></property>
+    </bean>
+    
+<context:property-placeholder location="classpath:datosImportantes.propiedades"/>
+
+<context:component-scan base-package="com"></context:component-scan>
+
+
+ <!--La siguiente linea es el cierre del beans general y no se puede repetir */-->
+</beans>
